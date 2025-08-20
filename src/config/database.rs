@@ -7,6 +7,7 @@ pub struct DatabaseConfig {
     user: Option<String>,
     password: Option<String>,
     database: Option<String>,
+    schema: Option<String>
 }
 
 impl DatabaseConfig {
@@ -27,6 +28,10 @@ impl DatabaseConfig {
     }
     
     pub fn database(&self) -> &str {
-        self.database.as_deref().unwrap_or("public")
+        self.database.as_deref().unwrap_or("postgres")
+    }
+    
+    pub fn schema(&self) -> &str {
+        self.schema.as_deref().unwrap_or("public")
     }
 }
