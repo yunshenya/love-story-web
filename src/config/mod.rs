@@ -3,7 +3,7 @@ use anyhow::{anyhow, Context};
 use serde::Deserialize;
 use crate::config::database::DatabaseConfig;
 use crate::config::server::ServerConfig;
-
+use config::Config;
 mod database;
 mod server;
 
@@ -11,7 +11,7 @@ static CONFIG: LazyLock<AppConfig> = LazyLock::new(|| {AppConfig::load().expect(
 static DEFAULT_SERVER_CONFIG: LazyLock<ServerConfig> = LazyLock::new(|| ServerConfig::default());
 static DEFAULT_DATABASE_CONFIG: LazyLock<DatabaseConfig> = LazyLock::new(|| DatabaseConfig::default());
 
-#[derive(Debug, Deserialize, Clone)]
+#[derive(Debug, Deserialize)]
 pub struct AppConfig {
     server_config: Option<ServerConfig>,
     database_config: Option<DatabaseConfig>,
@@ -19,7 +19,7 @@ pub struct AppConfig {
 
 impl AppConfig {
     fn load() -> anyhow::Result<Self> {
-        config::Config::builder()
+        Config::builder()
             .add_source(
                 config::File::with_name("application")
                     .required(false)

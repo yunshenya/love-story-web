@@ -1,6 +1,6 @@
 use serde::Deserialize;
 
-#[derive(Debug, Deserialize, Default, Clone)]
+#[derive(Debug, Deserialize, Default)]
 pub struct DatabaseConfig {
     host: Option<String>,
     port: Option<u16>,
