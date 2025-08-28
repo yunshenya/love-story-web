@@ -4,8 +4,8 @@ use anyhow::{Context, anyhow};
 use config::Config;
 use serde::Deserialize;
 use std::sync::LazyLock;
-mod database;
-mod server;
+pub mod database;
+pub mod server;
 
 static CONFIG: LazyLock<AppConfig> =
     LazyLock::new(|| AppConfig::load().expect("Failed to load config"));
