@@ -19,11 +19,9 @@ impl ServerConfig {
 
 impl Default for ServerConfig {
     fn default() -> Self {
-        Self{
+        Self {
             host: "0.0.0.0".to_string(),
             port: 8080,
         }
     }
 }
-
-

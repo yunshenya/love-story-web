@@ -6,15 +6,15 @@ use axum::response::Html;
 
 #[derive(Template)]
 #[template(path = "index.html")]
-struct Index{
-    name: String
+struct Index {
+    name: String,
 }
 
-
 #[debug_handler]
-pub async fn index(State(AppState{db: _}): State<AppState>) -> Html<String> {
-
-    let template = Index{name: "云深".to_string()};
+pub async fn index(State(AppState { db: _ }): State<AppState>) -> Html<String> {
+    let template = Index {
+        name: "云深".to_string(),
+    };
 
     match template.render() {
         Ok(rendered) => Html(rendered),

@@ -1,14 +1,13 @@
-use axum::Router;
-use sea_orm::DatabaseConnection;
 use crate::config;
 use crate::server::server::Server;
 use crate::utils::{database, logger};
+use axum::Router;
+use sea_orm::DatabaseConnection;
 
 #[derive(Clone)]
 pub struct AppState {
-    pub db: DatabaseConnection
+    pub db: DatabaseConnection,
 }
-
 
 impl AppState {
     pub fn new(db: DatabaseConnection) -> AppState {

@@ -1,8 +1,8 @@
-mod config;
-mod utils;
-mod handler;
 mod api;
+mod config;
+mod handler;
 mod server;
+mod utils;
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {

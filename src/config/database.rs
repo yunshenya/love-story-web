@@ -39,7 +39,7 @@ impl DatabaseConfig {
 
 impl Default for DatabaseConfig {
     fn default() -> Self {
-        Self{
+        Self {
             host: "localhost".to_string(),
             port: 5432,
             user: "postgres".to_string(),
@@ -49,4 +49,3 @@ impl Default for DatabaseConfig {
         }
     }
 }
-

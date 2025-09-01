@@ -1,10 +1,10 @@
-use std::fs;
-use std::path::Path;
 use crate::config::database::DatabaseConfig;
 use crate::config::server::ServerConfig;
 use anyhow::{Context, anyhow};
 use config::Config;
 use serde::{Deserialize, Serialize};
+use std::fs;
+use std::path::Path;
 use std::sync::LazyLock;
 pub mod database;
 pub mod server;
@@ -12,7 +12,7 @@ pub mod server;
 static CONFIG: LazyLock<AppConfig> =
     LazyLock::new(|| AppConfig::load().expect("Failed to load config"));
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Deserialize, Serialize, Default)]
 #[serde(default)]
 pub struct AppConfig {
     server_config: ServerConfig,
@@ -65,13 +65,4 @@ impl AppConfig {
 
 pub fn get() -> &'static AppConfig {
     &CONFIG
-}
-
-impl Default for AppConfig {
-    fn default() -> Self {
-        Self{
-            server_config: ServerConfig::default(),
-            database_config: DatabaseConfig::default(),
-        }
-    }
 }
