@@ -1,26 +1,32 @@
+use std::fs;
+use std::path::Path;
 use crate::config::database::DatabaseConfig;
 use crate::config::server::ServerConfig;
 use anyhow::{Context, anyhow};
 use config::Config;
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use std::sync::LazyLock;
 pub mod database;
 pub mod server;
 
 static CONFIG: LazyLock<AppConfig> =
     LazyLock::new(|| AppConfig::load().expect("Failed to load config"));
-static DEFAULT_SERVER_CONFIG: LazyLock<ServerConfig> = LazyLock::new(ServerConfig::default);
-static DEFAULT_DATABASE_CONFIG: LazyLock<DatabaseConfig> =
-    LazyLock::new(DatabaseConfig::default);
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Serialize)]
+#[serde(default)]
 pub struct AppConfig {
-    server_config: Option<ServerConfig>,
-    database_config: Option<DatabaseConfig>,
+    server_config: ServerConfig,
+    database_config: DatabaseConfig,
 }
 
 impl AppConfig {
     fn load() -> anyhow::Result<Self> {
+        let config_path = "application.toml";
+        if !Path::new(config_path).exists() {
+            Self::create_default_config_file(config_path)
+                .with_context(|| anyhow::anyhow!("Failed to create default config file"))?;
+        };
+
         Config::builder()
             .add_source(
                 config::File::with_name("application")
@@ -40,18 +46,32 @@ impl AppConfig {
     }
 
     pub fn server_config(&self) -> &ServerConfig {
-        self.server_config
-            .as_ref()
-            .unwrap_or(&DEFAULT_SERVER_CONFIG)
+        &self.server_config
     }
 
     pub fn database_config(&self) -> &DatabaseConfig {
-        self.database_config
-            .as_ref()
-            .unwrap_or(&DEFAULT_DATABASE_CONFIG)
+        &self.database_config
+    }
+
+    fn create_default_config_file(config_path: &str) -> anyhow::Result<()> {
+        let default_config = AppConfig::default();
+        let toml_content = toml::to_string_pretty(&default_config)
+            .with_context(|| anyhow::anyhow!("Failed to serialize default config"))?;
+        fs::write(config_path, toml_content)
+            .with_context(|| anyhow::anyhow!("Failed to write config file: {}", config_path))?;
+        Ok(())
     }
 }
 
 pub fn get() -> &'static AppConfig {
     &CONFIG
+}
+
+impl Default for AppConfig {
+    fn default() -> Self {
+        Self{
+            server_config: ServerConfig::default(),
+            database_config: DatabaseConfig::default(),
+        }
+    }
 }
