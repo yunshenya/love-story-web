@@ -1,18 +1,13 @@
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Deserialize, Serialize)]
+#[serde(default)]
 pub struct DatabaseConfig {
-    #[serde(default = "default_host")]
     host: String,
-    #[serde(default = "default_port")]
     port: u16,
-    #[serde(default = "default_user")]
     user: String,
-    #[serde(default = "default_password")]
     password: String,
-    #[serde(default = "default_database")]
     database: String,
-    #[serde(default = "default_schema")]
     schema: String,
 }
 
@@ -45,19 +40,13 @@ impl DatabaseConfig {
 impl Default for DatabaseConfig {
     fn default() -> Self {
         Self{
-            host: default_host(),
-            port: default_port(),
-            user: default_user(),
-            password: default_password(),
-            database: default_database(),
-            schema: default_schema(),
+            host: "localhost".to_string(),
+            port: 5432,
+            user: "postgres".to_string(),
+            password: "1332".to_string(),
+            database: "postgres".to_string(),
+            schema: "public".to_string(),
         }
     }
 }
 
-fn default_host() -> String { "localhost".into() }
-fn default_port() -> u16 { 5432 }
-fn default_user() -> String { "postgres".into() }
-fn default_password() -> String { "1332".into() }
-fn default_database() -> String { "postgres".into() }
-fn default_schema() -> String { "public".into() }
