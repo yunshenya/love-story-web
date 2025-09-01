@@ -13,7 +13,7 @@ pub struct DatabaseConfig {
 
 impl DatabaseConfig {
     pub fn host(&self) -> &str {
-        self.host.as_ref()
+        self.host.as_str()
     }
 
     pub fn port(&self) -> u16 {
@@ -21,19 +21,19 @@ impl DatabaseConfig {
     }
 
     pub fn user(&self) -> &str {
-        self.user.as_ref()
+        self.user.as_str()
     }
 
     pub fn password(&self) -> &str {
-        self.password.as_ref()
+        self.password.as_str()
     }
 
     pub fn database(&self) -> &str {
-        self.database.as_ref()
+        self.database.as_str()
     }
 
     pub fn schema(&self) -> &str {
-        self.schema.as_ref()
+        self.schema.as_str()
     }
 }
 

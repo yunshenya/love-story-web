@@ -13,7 +13,7 @@ impl ServerConfig {
     }
 
     pub fn host(&self) -> &str {
-        self.host.as_ref()
+        self.host.as_str()
     }
 }
 
