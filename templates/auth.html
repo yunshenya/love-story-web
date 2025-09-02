@@ -1,0 +1,215 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }} - 爱情记录{% endblock %}
+
+{% block content %}
+<div class="auth-card">
+  <!-- Logo and Header -->
+  <div class="logo">
+    <div class="logo-icon">
+      <span style="color: white; font-size: 24px;">♥</span>
+    </div>
+    <h1>爱情记录</h1>
+    <p>记录我们的美好时光</p>
+  </div>
+
+  <!-- Form Tabs -->
+  <div class="form-tabs">
+    <button id="loginTab" class="tab-button active" onclick="toggleForm(true)">
+      登录
+    </button>
+    <button id="registerTab" class="tab-button" onclick="toggleForm(false)">
+      注册
+    </button>
+  </div>
+
+  <!-- Login Form -->
+  <form id="loginForm" onsubmit="handleSubmit(event, true)">
+    <div class="form-group">
+      <label class="form-label" for="emailLogin">邮箱地址</label>
+      <div class="input-wrapper">
+        <span class="input-icon">✉️</span>
+        <input
+                type="email"
+                id="emailLogin"
+                name="email"
+                class="form-input"
+                placeholder="love@example.com"
+                required
+        >
+        <div class="error-message"></div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label" for="passwordLogin">密码</label>
+      <div class="input-wrapper">
+        <span class="input-icon">🔒</span>
+        <input
+                type="password"
+                id="passwordLogin"
+                name="password"
+                class="form-input"
+                placeholder="请输入密码"
+                required
+        >
+        <button
+                type="button"
+                id="toggleLoginPassword"
+                class="password-toggle"
+                onclick="togglePassword('passwordLogin', 'toggleLoginPassword')"
+        >
+          👁️‍🗨️
+        </button>
+        <div class="error-message"></div>
+      </div>
+    </div>
+
+    <div class="remember-forgot">
+      <label class="checkbox-wrapper">
+        <input type="checkbox" name="remember">
+        记住我
+      </label>
+      <a href="#" class="forgot-link">忘记密码？</a>
+    </div>
+
+    <button type="submit" class="submit-button">
+      <span class="button-text">登录</span>
+      <div class="loading-spinner hidden"></div>
+      <span style="font-size: 14px;">♥</span>
+    </button>
+  </form>
+
+  <!-- Register Form -->
+  <form id="registerForm" class="hidden" onsubmit="handleSubmit(event, false)">
+    <div class="form-group">
+      <label class="form-label" for="nameRegister">用户名</label>
+      <div class="input-wrapper">
+        <span class="input-icon">👤</span>
+        <input
+                type="text"
+                id="nameRegister"
+                name="name"
+                class="form-input"
+                placeholder="请输入用户名"
+                required
+        >
+        <div class="error-message"></div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label" for="emailRegister">邮箱地址</label>
+      <div class="input-wrapper">
+        <span class="input-icon">✉️</span>
+        <input
+                type="email"
+                id="emailRegister"
+                name="email"
+                class="form-input"
+                placeholder="love@example.com"
+                required
+        >
+        <div class="error-message"></div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label" for="passwordRegister">密码</label>
+      <div class="input-wrapper">
+        <span class="input-icon">🔒</span>
+        <input
+                type="password"
+                id="passwordRegister"
+                name="password"
+                class="form-input"
+                placeholder="请输入密码"
+                required
+        >
+        <button
+                type="button"
+                id="toggleRegisterPassword"
+                class="password-toggle"
+                onclick="togglePassword('passwordRegister', 'toggleRegisterPassword')"
+        >
+          👁️‍🗨️
+        </button>
+        <div class="error-message"></div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label" for="confirmPasswordRegister">确认密码</label>
+      <div class="input-wrapper">
+        <span class="input-icon">🔒</span>
+        <input
+                type="password"
+                id="confirmPasswordRegister"
+                name="confirmPassword"
+                class="form-input"
+                placeholder="请再次输入密码"
+                required
+        >
+        <button
+                type="button"
+                id="toggleConfirmPassword"
+                class="password-toggle"
+                onclick="togglePassword('confirmPasswordRegister', 'toggleConfirmPassword')"
+        >
+          👁️‍🗨️
+        </button>
+        <div class="error-message"></div>
+      </div>
+    </div>
+
+    <button type="submit" class="submit-button">
+      <span class="button-text">注册</span>
+      <div class="loading-spinner hidden"></div>
+      <span style="font-size: 14px;">♥</span>
+    </button>
+  </form>
+
+  <!-- Switch Mode -->
+  <div class="switch-mode">
+    <span id="switchText">还没有账户？</span>
+    <a href="#" id="switchLink" class="switch-link" onclick="toggleForm(false); return false;">立即注册</a>
+  </div>
+
+  <!-- Romantic Quote -->
+  <div class="romantic-quote">
+    "距离不是问题，心的距离才是问题"
+  </div>
+
+  <!-- Bottom Hearts -->
+  <div class="bottom-hearts">
+    <span class="heart">♥</span>
+    <span class="heart">♥</span>
+    <span class="heart">♥</span>
+  </div>
+</div>
+
+<script>
+  // Update switch text based on current form
+  function updateSwitchText(isLogin) {
+    const switchText = document.getElementById('switchText');
+    const switchLink = document.getElementById('switchLink');
+
+    if (isLogin) {
+      switchText.textContent = '还没有账户？';
+      switchLink.textContent = '立即注册';
+      switchLink.onclick = () => { toggleForm(false); return false; };
+    } else {
+      switchText.textContent = '已有账户？';
+      switchLink.textContent = '立即登录';
+      switchLink.onclick = () => { toggleForm(true); return false; };
+    }
+  }
+
+  // Override toggleForm to update switch text
+  const originalToggleForm = toggleForm;
+  toggleForm = function(isLogin) {
+    originalToggleForm(isLogin);
+    updateSwitchText(isLogin);
+  };
+</script>
+{% endblock %}

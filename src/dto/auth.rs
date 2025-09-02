@@ -6,6 +6,8 @@ pub struct RegisterRequest {
     pub email: String,
     pub password: String,
     pub name: String,
+    #[serde(rename= "confirmPassword")]
+    pub confirm_password: String,
 }
 
 #[derive(Debug, Deserialize)]

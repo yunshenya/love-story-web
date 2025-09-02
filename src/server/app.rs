@@ -28,7 +28,7 @@ impl AppState {
             .filter(users::Column::Email.eq(&req.email))
             .one(&self.db)
             .await?;
-
+        println!("{}", req.confirm_password);
         if existing.is_some() {
             return Err(anyhow!("Email already exists"));
         }

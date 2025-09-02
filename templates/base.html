@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}爱情记录{% endblock %}</title>
+  <meta name="description" content="记录我们的爱情故事，珍藏每一个美好瞬间">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #fce7f3 0%, #fdf2f8 50%, #fef7f7 100%);
+      min-height: 100vh;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* Floating hearts background */
+    .hearts-bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .heart {
+      position: absolute;
+      color: #f9a8d4;
+      opacity: 0.15;
+      animation: float 6s ease-in-out infinite;
+    }
+
+    .heart:nth-child(1) { left: 10%; top: 20%; animation-delay: 0s; font-size: 20px; }
+    .heart:nth-child(2) { left: 20%; top: 80%; animation-delay: 1s; font-size: 16px; }
+    .heart:nth-child(3) { left: 60%; top: 30%; animation-delay: 2s; font-size: 24px; }
+    .heart:nth-child(4) { left: 80%; top: 70%; animation-delay: 3s; font-size: 18px; }
+    .heart:nth-child(5) { left: 40%; top: 10%; animation-delay: 4s; font-size: 22px; }
+    .heart:nth-child(6) { left: 70%; top: 90%; animation-delay: 5s; font-size: 14px; }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-20px) rotate(5deg); }
+    }
+
+    .container {
+      position: relative;
+      z-index: 10;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .auth-card {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border-radius: 24px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      padding: 40px;
+      width: 100%;
+      max-width: 420px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .auth-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(135deg, rgba(251, 207, 232, 0.3) 0%, rgba(253, 242, 248, 0.3) 100%);
+      border-radius: 24px;
+      z-index: -1;
+    }
+
+    .logo {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    .logo-icon {
+      width: 64px;
+      height: 64px;
+      background: linear-gradient(135deg, #ec4899, #f43f5e);
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 16px;
+      box-shadow: 0 8px 20px rgba(236, 72, 153, 0.3);
+    }
+
+    .logo h1 {
+      font-size: 28px;
+      font-weight: 700;
+      background: linear-gradient(135deg, #db2777, #e11d48);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 8px;
+    }
+
+    .logo p {
+      color: #6b7280;
+      font-size: 14px;
+    }
+
+    .form-tabs {
+      display: flex;
+      background: #f3f4f6;
+      border-radius: 12px;
+      padding: 4px;
+      margin-bottom: 24px;
+    }
+
+    .tab-button {
+      flex: 1;
+      padding: 12px 16px;
+      border: none;
+      background: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      color: #6b7280;
+    }
+
+    .tab-button.active {
+      background: white;
+      color: #db2777;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 14px;
+      font-weight: 500;
+      color: #374151;
+      margin-bottom: 6px;
+    }
+
+    .input-wrapper {
+      position: relative;
+    }
+
+    .input-icon {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #9ca3af;
+      width: 16px;
+      height: 16px;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 12px 12px 12px 40px;
+      border: 1px solid #d1d5db;
+      border-radius: 12px;
+      font-size: 14px;
+      background: rgba(255, 255, 255, 0.8);
+      transition: all 0.2s ease;
+    }
+
+    .form-input:focus {
+      outline: none;
+      border-color: #ec4899;
+      box-shadow: 0 0 0 3px rgba(236, 72, 153, 0.1);
+      background: white;
+    }
+
+    .form-input.error {
+      border-color: #ef4444;
+    }
+
+    .password-toggle {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: #9ca3af;
+      cursor: pointer;
+      padding: 4px;
+      border-radius: 4px;
+      transition: color 0.2s ease;
+    }
+
+    .password-toggle:hover {
+      color: #6b7280;
+    }
+
+    .error-message {
+      color: #ef4444;
+      font-size: 12px;
+      margin-top: 4px;
+    }
+
+    .remember-forgot {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+      font-size: 14px;
+    }
+
+    .checkbox-wrapper {
+      display: flex;
+      align-items: center;
+      color: #6b7280;
+    }
+
+    .checkbox-wrapper input {
+      margin-right: 8px;
+      accent-color: #ec4899;
+    }
+
+    .forgot-link {
+      color: #db2777;
+      text-decoration: none;
+      font-weight: 500;
+      transition: color 0.2s ease;
+    }
+
+    .forgot-link:hover {
+      color: #be185d;
+    }
+
+    .submit-button {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, #ec4899, #f43f5e);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 12px rgba(236, 72, 153, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .submit-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(236, 72, 153, 0.4);
+    }
+
+    .submit-button:active {
+      transform: translateY(0);
+    }
+
+    .submit-button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .loading-spinner {
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-top: 2px solid white;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .switch-mode {
+      text-align: center;
+      margin-top: 24px;
+      color: #6b7280;
+      font-size: 14px;
+    }
+
+    .switch-link {
+      color: #db2777;
+      text-decoration: none;
+      font-weight: 600;
+      margin-left: 4px;
+      transition: color 0.2s ease;
+    }
+
+    .switch-link:hover {
+      color: #be185d;
+    }
+
+    .romantic-quote {
+      text-align: center;
+      margin-top: 32px;
+      color: #9ca3af;
+      font-size: 12px;
+      font-style: italic;
+    }
+
+    .bottom-hearts {
+      text-align: center;
+      margin-top: 24px;
+    }
+
+    .bottom-hearts .heart {
+      position: static;
+      display: inline-block;
+      margin: 0 4px;
+      color: #f472b6;
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    .bottom-hearts .heart:nth-child(2) {
+      animation-delay: 0.2s;
+      font-size: 18px;
+    }
+
+    .bottom-hearts .heart:nth-child(3) {
+      animation-delay: 0.4s;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 0.6; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.1); }
+    }
+
+    @media (max-width: 480px) {
+      .auth-card {
+        padding: 24px;
+        margin: 16px;
+      }
+
+      .logo h1 {
+        font-size: 24px;
+      }
+    }
+
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+<div class="hearts-bg">
+  <div class="heart">♥</div>
+  <div class="heart">♥</div>
+  <div class="heart">♥</div>
+  <div class="heart">♥</div>
+  <div class="heart">♥</div>
+  <div class="heart">♥</div>
+</div>
+
+<div class="container">
+  {% block content %}{% endblock %}
+</div>
+
+<script>
+  // Toggle between login and register forms
+  function toggleForm(isLogin) {
+    const loginForm = document.getElementById('loginForm');
+    const registerForm = document.getElementById('registerForm');
+    const loginTab = document.getElementById('loginTab');
+    const registerTab = document.getElementById('registerTab');
+
+    if (isLogin) {
+      loginForm.classList.remove('hidden');
+      registerForm.classList.add('hidden');
+      loginTab.classList.add('active');
+      registerTab.classList.remove('active');
+    } else {
+      loginForm.classList.add('hidden');
+      registerForm.classList.remove('hidden');
+      loginTab.classList.remove('active');
+      registerTab.classList.add('active');
+    }
+  }
+
+  // Toggle password visibility
+  function togglePassword(inputId, buttonId) {
+    const input = document.getElementById(inputId);
+    const button = document.getElementById(buttonId);
+
+    if (input.type === 'password') {
+      input.type = 'text';
+      button.innerHTML = '👁️';
+    } else {
+      input.type = 'password';
+      button.innerHTML = '👁️‍🗨️';
+    }
+  }
+
+  // Form validation
+  function validateEmail(email) {
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return re.test(email);
+  }
+
+  function showError(inputId, message) {
+    const input = document.getElementById(inputId);
+    const errorDiv = input.parentNode.querySelector('.error-message');
+
+    input.classList.add('error');
+    if (errorDiv) {
+      errorDiv.textContent = message;
+    }
+  }
+
+  function clearError(inputId) {
+    const input = document.getElementById(inputId);
+    const errorDiv = input.parentNode.querySelector('.error-message');
+
+    input.classList.remove('error');
+    if (errorDiv) {
+      errorDiv.textContent = '';
+    }
+  }
+
+  // Handle form submission
+  async function handleSubmit(event, isLogin) {
+    event.preventDefault();
+
+    const form = event.target;
+    const submitButton = form.querySelector('.submit-button');
+    const buttonText = submitButton.querySelector('.button-text');
+    const spinner = submitButton.querySelector('.loading-spinner');
+
+    // Clear previous errors
+    form.querySelectorAll('.form-input').forEach(input => {
+      clearError(input.id);
+    });
+
+    // Get form data
+    const formData = new FormData(form);
+    const data = Object.fromEntries(formData);
+
+    // Validate
+    let hasErrors = false;
+
+    if (!data.email || !validateEmail(data.email)) {
+      showError('email' + (isLogin ? 'Login' : 'Register'), '请输入有效的邮箱地址');
+      hasErrors = true;
+    }
+
+    if (!data.password || data.password.length < 6) {
+      showError('password' + (isLogin ? 'Login' : 'Register'), '密码至少需要6位字符');
+      hasErrors = true;
+    }
+
+    if (!isLogin) {
+      if (!data.name || data.name.trim().length < 2) {
+        showError('nameRegister', '用户名至少需要2个字符');
+        hasErrors = true;
+      }
+      if (data.password !== data.confirmPassword) {
+        showError('confirmPasswordRegister', '两次输入的密码不一致');
+        hasErrors = true;
+      }
+    }
+
+    if (hasErrors) return;
+
+    // Show loading state
+    submitButton.disabled = true;
+    buttonText.textContent = '处理中...';
+    spinner.classList.remove('hidden');
+
+    try {
+      const endpoint = isLogin ? '/api/auth/login' : '/api/auth/register';
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data)
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        // Handle successful login/register
+        window.location.href = '/dashboard'; // 重定向到主页面
+      } else {
+        const error = await response.json();
+        alert(error.message || (isLogin ? '登录失败' : '注册失败'));
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      alert('网络错误，请稍后重试');
+    } finally {
+      // Reset loading state
+      submitButton.disabled = false;
+      buttonText.textContent = isLogin ? '登录' : '注册';
+      spinner.classList.add('hidden');
+    }
+  }
+
+  // Clear errors on input
+  document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.form-input').forEach(input => {
+      input.addEventListener('input', function() {
+        clearError(this.id);
+      });
+    });
+  });
+</script>
+</body>
+</html>

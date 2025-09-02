@@ -2,8 +2,8 @@ use crate::api::auth::auth_routes;
 use crate::api::users::create_user_router;
 use crate::handler::index::index;
 use crate::server::app::AppState;
-use axum::Router;
 use axum::routing::get_service;
+use axum::Router;
 use tower_http::services::{ServeDir, ServeFile};
 
 mod users;
