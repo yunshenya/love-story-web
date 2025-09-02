@@ -1,7 +1,5 @@
-use crate::server::app::AppState;
 use askama::Template;
 use axum::debug_handler;
-use axum::extract::State;
 use axum::response::Html;
 
 #[derive(Template)]
@@ -11,7 +9,7 @@ struct Index {
 }
 
 #[debug_handler]
-pub async fn index(State(AppState { db: _ }): State<AppState>) -> Html<String> {
+pub async fn index() -> Html<String> {
     let template = Index {
         name: "云深".to_string(),
     };
