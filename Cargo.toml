@@ -18,4 +18,3 @@ tower-http = {version = "0.6.6", features = ["fs"]}
 toml = "0.9.5"
 uuid = { version = "1.18.0", features = ["v4"] }
 bcrypt = "0.17.1"
-chrono = { version = "0.4", features = ["serde"] }
