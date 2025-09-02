@@ -21,3 +21,8 @@ pub struct AuthResponse {
     pub name: String,
     pub message: String,
 }
+
+#[derive(Debug, Deserialize)]
+pub struct SearchMail{
+    pub mail: String
+}

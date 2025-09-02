@@ -1,5 +1,5 @@
 use crate::config;
-use crate::dto::auth::{AuthResponse, LoginRequest, RegisterRequest};
+use crate::dto::auth::{AuthResponse, LoginRequest, RegisterRequest, SearchMail};
 use crate::entities::prelude::Users;
 use crate::server::server::Server;
 use crate::utils::{database, logger};
@@ -82,9 +82,9 @@ impl AppState {
     }
 
     // 根据ID获取用户
-    pub async fn get_user(&self, gmail: String) -> Result<Option<users::Model>> {
+    pub async fn get_user(&self, search_mail: SearchMail) -> Result<Option<users::Model>> {
         let user = Users::find()
-            .filter(users::Column::Email.eq(&gmail))
+            .filter(users::Column::Email.eq(&search_mail.mail))
             .one(&self.db)
             .await?;
         Ok(user)

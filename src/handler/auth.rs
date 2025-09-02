@@ -13,10 +13,10 @@ pub async fn register(
 }
 
 pub async fn login(
-    State(auth_service): State<AppState>,
+    State(app_state): State<AppState>,
     Json(req): Json<LoginRequest>,
 ) -> Result<Json<AuthResponse>, StatusCode> {
-    match auth_service.login(req).await {
+    match app_state.login(req).await {
         Ok(response) => Ok(Json(response)),
         Err(_) => Err(StatusCode::UNAUTHORIZED),
     }
