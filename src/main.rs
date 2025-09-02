@@ -4,6 +4,7 @@ mod handler;
 mod server;
 mod utils;
 mod entities;
+mod dto;
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {

@@ -1,9 +1,8 @@
+use crate::entities::users;
 use crate::server::app::AppState;
-use axum::response::IntoResponse;
-use axum::{debug_handler, Router};
 use axum::extract::State;
-use sea_orm::EntityTrait;
-use crate::entities::prelude::*;
+use axum::http::StatusCode;
+use axum::{debug_handler, Json, Router};
 
 pub fn create_user_router() -> Router<AppState> {
     Router::new()
@@ -12,7 +11,9 @@ pub fn create_user_router() -> Router<AppState> {
 
 
 #[debug_handler]
-async fn users(State(AppState { db }): State<AppState>) -> impl IntoResponse {
-    let users = Users::find().all(&db).await.unwrap();
-    axum::Json(users)
+async fn users(State(app): State<AppState>) -> Result<Json<Option<users::Model>>, StatusCode>{
+    match app.get_user("test@gmail.com".to_string()).await {
+        Ok(user) => Ok(Json(user)),
+        Err(_) => Err(StatusCode::UNAUTHORIZED)
+    }
 }
