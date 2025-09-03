@@ -5,6 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{% block title %}爱情记录{% endblock %}</title>
   <meta name="description" content="记录我们的爱情故事，珍藏每一个美好瞬间">
+
+  <!-- 加载加密库 -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+
   <style>
     * {
       margin: 0;
@@ -360,6 +364,19 @@
     .hidden {
       display: none;
     }
+
+    .encryption-indicator {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: #059669;
+      font-size: 12px;
+      margin-top: 4px;
+    }
+
+    .encryption-indicator .lock-icon {
+      font-size: 10px;
+    }
   </style>
 </head>
 <body>
@@ -377,6 +394,57 @@
 </div>
 
 <script>
+  // 密码加密工具类
+  class PasswordCrypto {
+    static async hashPassword(password, email = '') {
+      // 使用 email 作为 salt 的一部分，增加安全性
+      const salt = 'love-story-' + email;
+
+      // 使用 SHA-256 + 盐值进行多重哈希
+      let hashed = CryptoJS.SHA256(password + salt).toString();
+
+      // 进行多轮哈希增强安全性
+      for (let i = 0; i < 1000; i++) {
+        hashed = CryptoJS.SHA256(hashed + salt + i).toString();
+      }
+
+      return hashed;
+    }
+
+    static validatePasswordStrength(password) {
+      const minLength = 6;
+      const hasUpperCase = /[A-Z]/.test(password);
+      const hasLowerCase = /[a-z]/.test(password);
+      const hasNumbers = /\d/.test(password);
+      const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+
+      let strength = 0;
+      let messages = [];
+
+      if (password.length >= minLength) {
+        strength += 1;
+      } else {
+        messages.push('至少6位字符');
+      }
+
+      if (hasUpperCase) strength += 1;
+      if (hasLowerCase) strength += 1;
+      if (hasNumbers) strength += 1;
+      if (hasSpecialChar) strength += 1;
+
+      let level = 'weak';
+      if (strength >= 4) level = 'strong';
+      else if (strength >= 3) level = 'medium';
+
+      return {
+        strength,
+        level,
+        messages,
+        isValid: password.length >= minLength
+      };
+    }
+  }
+
   // Toggle between login and register forms
   function toggleForm(isLogin) {
     const loginForm = document.getElementById('loginForm');
@@ -463,8 +531,10 @@
       hasErrors = true;
     }
 
-    if (!data.password || data.password.length < 6) {
-      showError('password' + (isLogin ? 'Login' : 'Register'), '密码至少需要6位字符');
+    // 验证密码强度
+    const passwordValidation = PasswordCrypto.validatePasswordStrength(data.password);
+    if (!passwordValidation.isValid) {
+      showError('password' + (isLogin ? 'Login' : 'Register'), passwordValidation.messages.join(', '));
       hasErrors = true;
     }
 
@@ -483,10 +553,17 @@
 
     // Show loading state
     submitButton.disabled = true;
-    buttonText.textContent = '处理中...';
+    buttonText.textContent = '加密中...';
     spinner.classList.remove('hidden');
 
     try {
+      data.password = await PasswordCrypto.hashPassword(data.password, data.email);
+
+      if (!isLogin && data.confirmPassword) {
+        data.confirmPassword = await PasswordCrypto.hashPassword(data.confirmPassword, data.email);
+      }
+      buttonText.textContent = '提交中...';
+
       const endpoint = isLogin ? '/api/auth/login' : '/api/auth/register';
       const response = await fetch(endpoint, {
         method: 'POST',
@@ -497,12 +574,14 @@
       });
 
       if (response.ok) {
-        const result = await response.json();
+        const result = await response.text(); // 因为返回的是带cookie的response
+        console.log('请求成功');
         // Handle successful login/register
-        window.location.href = '/dashboard'; // 重定向到主页面
+        window.location.href = '/dashboard';
       } else {
-        const error = await response.json();
-        alert(error.message || (isLogin ? '登录失败' : '注册失败'));
+        const errorText = await response.text();
+        console.error('请求失败:', errorText);
+        alert(isLogin ? '登录失败，请检查邮箱和密码' : '注册失败，邮箱可能已被使用');
       }
     } catch (error) {
       console.error('Error:', error);
@@ -515,12 +594,50 @@
     }
   }
 
-  // Clear errors on input
+  // Clear errors on input and show encryption indicator for password fields
   document.addEventListener('DOMContentLoaded', function() {
     document.querySelectorAll('.form-input').forEach(input => {
       input.addEventListener('input', function() {
         clearError(this.id);
       });
+    });
+
+    // 为密码字段添加强度检查
+    const passwordInputs = document.querySelectorAll('input[type="password"]');
+    passwordInputs.forEach(input => {
+      if (input.name === 'password') {
+        input.addEventListener('input', function() {
+          const validation = PasswordCrypto.validatePasswordStrength(this.value);
+          const wrapper = this.parentNode;
+
+          // 移除旧的强度指示器
+          const oldIndicator = wrapper.querySelector('.password-strength');
+          if (oldIndicator) {
+            oldIndicator.remove();
+          }
+
+          if (this.value.length > 0) {
+            const strengthIndicator = document.createElement('div');
+            strengthIndicator.className = 'password-strength';
+            strengthIndicator.style.fontSize = '12px';
+            strengthIndicator.style.marginTop = '4px';
+
+            let color = '#ef4444';
+            let text = '弱';
+            if (validation.level === 'medium') {
+              color = '#f59e0b';
+              text = '中等';
+            } else if (validation.level === 'strong') {
+              color = '#059669';
+              text = '强';
+            }
+
+            strengthIndicator.style.color = color;
+            strengthIndicator.textContent = `密码强度: ${text}`;
+            wrapper.appendChild(strengthIndicator);
+          }
+        });
+      }
     });
   });
 </script>

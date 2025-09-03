@@ -1,16 +1,15 @@
 use crate::config;
 use crate::dto::auth::{AuthResponse, LoginRequest, RegisterRequest, SearchMail};
 use crate::entities::prelude::Users;
+use crate::entities::users;
 use crate::server::server::Server;
 use crate::utils::{database, logger};
 use anyhow::{anyhow, Result};
 use axum::Router;
-use bcrypt::{hash, verify, DEFAULT_COST};
 use sea_orm::QueryFilter;
 use sea_orm::{ActiveModelTrait, DatabaseConnection, EntityTrait, Set};
 use sea_orm::{ColumnTrait, NotSet};
 use uuid::Uuid;
-use crate::entities::users;
 
 #[derive(Clone)]
 pub struct AppState {
@@ -28,19 +27,21 @@ impl AppState {
             .filter(users::Column::Email.eq(&req.email))
             .one(&self.db)
             .await?;
-        println!("{}", req.confirm_password);
+
+        if req.password != req.confirm_password{
+            return Err(anyhow!("Password mismatch"));
+        }
+
         if existing.is_some() {
             return Err(anyhow!("Email already exists"));
         }
 
-        // 密码加密
-        let password_hash = hash(req.password, DEFAULT_COST)?;
 
         // 创建用户
         let user_model = users::ActiveModel {
             id: Set(Uuid::new_v4()),
             email: Set(req.email.clone()),
-            password_hash: Set(password_hash),
+            password_hash: Set(req.password),
             name: Set(req.name.clone()),
             created_at: NotSet,
         };
@@ -69,7 +70,7 @@ impl AppState {
         };
 
         // 验证密码
-        if !verify(req.password, &user.password_hash)? {
+        if req.password != user.password_hash {
             return Err(anyhow!("Invalid email or password"));
         }
 
