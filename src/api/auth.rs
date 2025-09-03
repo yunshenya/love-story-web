@@ -1,12 +1,15 @@
 use axum::{routing::post, Router};
 use crate::server::app::AppState;
 use axum::{extract::State, response::Json, http::StatusCode};
+use axum::response::{IntoResponse, Redirect, Response};
+use axum::routing::delete;
 use crate::dto::auth::*;
 
 pub fn auth_routes() -> Router<AppState> {
     Router::new()
         .route("/register", post(register))
         .route("/login", post(login))
+        .route("/logout", delete(logout))
 }
 
 
@@ -28,4 +31,8 @@ pub async fn login(
         Ok(response) => Ok(Json(response)),
         Err(_) => Err(StatusCode::UNAUTHORIZED),
     }
+}
+
+pub async fn logout() -> Response {
+    Redirect::to("/").into_response()
 }
