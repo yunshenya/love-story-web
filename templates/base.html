@@ -575,9 +575,8 @@
 
       if (response.ok) {
         const result = await response.text(); // 因为返回的是带cookie的response
-        console.log('请求成功');
-        // Handle successful login/register
-        window.location.href = '/dashboard';
+        console.log(result);
+        window.location.href = '/index';
       } else {
         const errorText = await response.text();
         console.error('请求失败:', errorText);

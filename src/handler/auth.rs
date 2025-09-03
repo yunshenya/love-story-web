@@ -1,23 +1,21 @@
-use axum::{extract::State, response::Json, http::StatusCode};
-use crate::dto::auth::*;
-use crate::server::app::AppState;
+use askama::Template;
+use axum::debug_handler;
+use axum::response::Html;
 
-pub async fn register(
-    State(auth_service): State<AppState>,
-    Json(req): Json<RegisterRequest>,
-) -> Result<Json<AuthResponse>, StatusCode> {
-    match auth_service.register(req).await {
-        Ok(response) => Ok(Json(response)),
-        Err(_) => Err(StatusCode::BAD_REQUEST),
-    }
+
+#[derive(Template)]
+#[template(path = "auth.html")]
+struct AuthTemplate {
+    title: String,
 }
 
-pub async fn login(
-    State(app_state): State<AppState>,
-    Json(req): Json<LoginRequest>,
-) -> Result<Json<AuthResponse>, StatusCode> {
-    match app_state.login(req).await {
-        Ok(response) => Ok(Json(response)),
-        Err(_) => Err(StatusCode::UNAUTHORIZED),
+#[debug_handler]
+pub async fn auth() -> Html<String> {
+    let template = AuthTemplate {
+        title: "love".to_string(),
+    };
+    match template.render() {
+        Ok(rendered) => Html(rendered),
+        Err(e) => Html(format!("Error rendering template: {}", e)),
     }
 }

@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }} - 爱情记录</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #fce7f3 0%, #fdf2f8 50%, #fef7f7 100%);
+            min-height: 100vh;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #ec4899, #f43f5e);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+        }
+
+        .logo h1 {
+            font-size: 24px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #db2777, #e11d48);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .user-info {
+            text-align: right;
+        }
+
+        .user-name {
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .user-email {
+            font-size: 14px;
+            color: #6b7280;
+        }
+
+        .logout-btn {
+            padding: 8px 16px;
+            background: linear-gradient(135deg, #ec4899, #f43f5e);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .logout-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(236, 72, 153, 0.3);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .welcome-section {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .welcome-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #db2777, #e11d48);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+        }
+
+        .welcome-subtitle {
+            font-size: 1.2rem;
+            color: #6b7280;
+            margin-bottom: 2rem;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .feature-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 2rem;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        .feature-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 1rem;
+            background: linear-gradient(135deg, #ec4899, #f43f5e);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            color: white;
+        }
+
+        .feature-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 1rem;
+        }
+
+        .feature-description {
+            color: #6b7280;
+            line-height: 1.6;
+        }
+
+        .floating-hearts {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .heart {
+            position: absolute;
+            color: #f9a8d4;
+            opacity: 0.1;
+            animation: float 8s ease-in-out infinite;
+        }
+
+        .heart:nth-child(1) { left: 5%; top: 20%; animation-delay: 0s; font-size: 24px; }
+        .heart:nth-child(2) { left: 15%; top: 60%; animation-delay: 2s; font-size: 18px; }
+        .heart:nth-child(3) { left: 75%; top: 30%; animation-delay: 4s; font-size: 28px; }
+        .heart:nth-child(4) { left: 85%; top: 70%; animation-delay: 6s; font-size: 20px; }
+        .heart:nth-child(5) { left: 45%; top: 15%; animation-delay: 1s; font-size: 22px; }
+        .heart:nth-child(6) { left: 65%; top: 85%; animation-delay: 3s; font-size: 16px; }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            25% { transform: translateY(-15px) rotate(2deg); }
+            50% { transform: translateY(-30px) rotate(-2deg); }
+            75% { transform: translateY(-15px) rotate(1deg); }
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                padding: 1rem;
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .container {
+                padding: 1rem;
+            }
+
+            .welcome-title {
+                font-size: 2rem;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="floating-hearts">
+    <div class="heart">♥</div>
+    <div class="heart">♥</div>
+    <div class="heart">♥</div>
+    <div class="heart">♥</div>
+    <div class="heart">♥</div>
+    <div class="heart">♥</div>
+</div>
+
+<header class="header">
+    <div class="logo">
+        <div class="logo-icon">♥</div>
+        <h1>爱情记录</h1>
+    </div>
+    <div class="user-menu">
+        <div class="user-info">
+            <div class="user-name">{{ user_name }}</div>
+            <div class="user-email">{{ user_email }}</div>
+        </div>
+        <button class="logout-btn" onclick="logout()">退出登录</button>
+    </div>
+</header>
+
+<div class="container">
+    <section class="welcome-section">
+        <h1 class="welcome-title">欢迎回来，{{ user_name }}！</h1>
+        <p class="welcome-subtitle">让我们继续记录属于你们的美好时光</p>
+        <div style="font-size: 48px; color: #f472b6; margin-top: 1rem;">♥ ♥ ♥</div>
+    </section>
+
+    <div class="features-grid">
+        <div class="feature-card">
+            <div class="feature-icon">📝</div>
+            <h3 class="feature-title">爱情日记</h3>
+            <p class="feature-description">记录每一个重要的时刻，让美好的回忆永远保存在心中。</p>
+        </div>
+
+        <div class="feature-card">
+            <div class="feature-icon">📷</div>
+            <h3 class="feature-title">照片相册</h3>
+            <p class="feature-description">上传和分享你们的珍贵照片，创建专属的爱情相册。</p>
+        </div>
+
+        <div class="feature-card">
+            <div class="feature-icon">📅</div>
+            <h3 class="feature-title">纪念日提醒</h3>
+            <p class="feature-description">设置重要日期提醒，永远不错过任何一个特殊的日子。</p>
+        </div>
+
+        <div class="feature-card">
+            <div class="feature-icon">💝</div>
+            <h3 class="feature-title">礼物记录</h3>
+            <p class="feature-description">记录送给彼此的礼物，见证你们爱情的点点滴滴。</p>
+        </div>
+
+        <div class="feature-card">
+            <div class="feature-icon">🎵</div>
+            <h3 class="feature-title">情歌收藏</h3>
+            <p class="feature-description">收藏属于你们的专属歌单，让音乐见证你们的爱情。</p>
+        </div>
+
+        <div class="feature-card">
+            <div class="feature-icon">🌟</div>
+            <h3 class="feature-title">愿望清单</h3>
+            <p class="feature-description">记录彼此的心愿，一起努力实现每一个美好的梦想。</p>
+        </div>
+    </div>
+</div>
+
+<script>
+    async function logout() {
+        try {
+            const response = await fetch('/api/auth/logout', {
+                method: 'DELETE',
+            });
+
+            if (response.ok) {
+                window.location.href = '/login';
+            } else {
+                alert('退出登录失败，请稍后重试');
+            }
+        } catch (error) {
+            console.error('Logout error:', error);
+            alert('网络错误，请稍后重试');
+        }
+    }
+
+    // 添加一些动态效果
+    document.addEventListener('DOMContentLoaded', function() {
+        const cards = document.querySelectorAll('.feature-card');
+
+        // 为卡片添加点击效果
+        cards.forEach(card => {
+            card.addEventListener('click', function() {
+                this.style.transform = 'scale(0.98)';
+                setTimeout(() => {
+                    this.style.transform = '';
+                }, 150);
+            });
+        });
+
+        // 添加随机浮动的爱心
+        function createFloatingHeart() {
+            const heart = document.createElement('div');
+            heart.innerHTML = '♥';
+            heart.style.position = 'fixed';
+            heart.style.color = '#f472b6';
+            heart.style.opacity = '0.3';
+            heart.style.fontSize = Math.random() * 20 + 15 + 'px';
+            heart.style.left = Math.random() * window.innerWidth + 'px';
+            heart.style.top = window.innerHeight + 'px';
+            heart.style.pointerEvents = 'none';
+            heart.style.zIndex = '1';
+            heart.style.animation = `floatUp ${3 + Math.random() * 2}s linear forwards`;
+
+            document.body.appendChild(heart);
+
+            setTimeout(() => {
+                heart.remove();
+            }, 5000);
+        }
+
+        // 定期创建浮动爱心
+        setInterval(createFloatingHeart, 3000);
+    });
+
+    // 添加CSS动画
+    const style = document.createElement('style');
+    style.textContent = `
+            @keyframes floatUp {
+                0% {
+                    transform: translateY(0px) rotate(0deg);
+                    opacity: 0.3;
+                }
+                50% {
+                    opacity: 0.6;
+                }
+                100% {
+                    transform: translateY(-100vh) rotate(360deg);
+                    opacity: 0;
+                }
+            }
+        `;
+    document.head.appendChild(style);
+</script>
+</body>
+</html>
